@@ -1,4 +1,6 @@
-# org-formation project
+# Build AWS Organization with Code
+
+This project describes step-by-step configuration of AWS Organization with org-formation tool.
 
 # Install
 
@@ -8,13 +10,61 @@ With npm installed, get `aws-organization-formation` package:
 
 This is the tool commonly known under `ofn` abbreviation.
 
-# Initialize
+# Prerequisites
 
-`org-formation init organization.yml --profile master-account --region us-east-1 --verbose`
+1. Credentials with profile for master aws account are configured (named profile is for convenience).
+2. Clone this repository, checkout code
 
-ofn will pick up existing aws organization and save them into organization.yml file for review and further changes.
+# Develop
 
-It does not make any changes in AWS at this stage.
+The repository designed in form of bare-bone main branch with feature branches that add functionality.
+
+The Readme describes how to build up this functionality by checking out branches and running `org-formation`
+
+AWS Organization diagram for this exercise:
+
+```mermaid
+
+flowchart TB
+    subgraph root
+        ma["master account"]
+    end
+
+    subgraph sharedou["Shared OU"]
+        cicd["cicd account"]
+    end
+
+    subgraph appx["ApplicationX OU"]
+        dev["AppX dev account"]
+        prod["AppX prod account"]
+    end
+
+    ma --> sharedou
+
+    cicd -->|trust| dev
+
+    cicd -->|trust| prod
+```
+
+## Init state
+
+Checkout `main` branch where `organization.yml` config will be updated.
+
+The first step for `org-formation` is to initialize config file, run this command: `org-formation init organization.yml --profile master-account --region us-east-1 --verbose`
+
+ofn will pick up existing accounts and OUs in the AWS Organization and save them into organization.yml file for review and further changes. It does not make any changes in AWS at this stage.
+
+Next step, update `organizations.yml` to configure AWS Organizations according to the diagram above with own email.
+
+Next step, create change-set: `org-formation create-change-set organization.yml --profile master-account`
+
+Review change set and if everything looks correct, apply changes: `org-formation update organization.yml --profile master-account`
+
+Commit and push changes to main.
+
+## Init CICD pipeline
+
+`org-formation init-pipeline organization.yml --profile master-account --verbose --print-stack`
 
 # How to run and deploy
 
