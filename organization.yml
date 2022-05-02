@@ -50,12 +50,12 @@ Organization:
         budget-alarm-threshold: '5'
         account-owner-email: a+appx-dev@naumenko.ca
 
-  # Appx-prod:
-  #   Type: OC::ORG::Account
-  #   Properties:
-  #     Alias: naumenko-appx-prod
-  #     RootEmail: roman+appx-prod@naumenko.ca
-  #     AccountName: Application X production account
-  #     Tags:
-  #       budget-alarm-threshold: '5'
-  #       account-owner-email: a+appx-prod@naumenko.ca
+  Appx-prod:
+    Type: OC::ORG::Account
+    Properties:
+      Alias: naumenko-appx-prod
+      RootEmail: roman+appx-prod@naumenko.ca
+      AccountName: Application X production account
+      Tags:
+        budget-alarm-threshold: '5'
+        account-owner-email: a+appx-prod@naumenko.ca
