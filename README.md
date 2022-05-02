@@ -1,4 +1,15 @@
-# Build AWS Organization with Code
+- [About](#about)
+- [Install](#install)
+- [Prerequisites](#prerequisites)
+- [Develop](#develop)
+  - [Init state](#init-state)
+  - [Org-formation CICD pipeline](#org-formation-cicd-pipeline)
+    - [Bootstrap (init) pipeline](#bootstrap-init-pipeline)
+    - [Setup Codecommit repo](#setup-codecommit-repo)
+- [How to run and deploy](#how-to-run-and-deploy)
+- [CICD](#cicd)
+
+# About
 
 This project describes step-by-step configuration of AWS Organization with org-formation tool.
 
@@ -60,11 +71,71 @@ Next step, create change-set: `org-formation create-change-set organization.yml 
 
 Review change set and if everything looks correct, apply changes: `org-formation update organization.yml --profile master-account`
 
-Commit and push changes to main.
+Commit and push changes to the branch `main`.
 
-## Init CICD pipeline
+## Org-formation CICD pipeline
 
-`org-formation init-pipeline organization.yml --profile master-account --verbose --print-stack`
+While ofn can work well as a cli, it is more practical to configure automation, so it can apply changes from git repository. Using branch `init-pipeline`, let's bootstrap pipeline and apply changes with git push.
+
+There will be multiple steps, ofn creates multiple resources, the major ones are:
+
+1. Cloudformation stack
+2. Codecommit repository
+3. CodepiPeline
+4. Codebuild
+
+### Bootstrap (init) pipeline
+
+Run `org-formation init-pipeline organization.yml --profile master-account --region your-region --build-account-id {master_account_id} --verbose`
+
+The output should be similar to this:
+
+```bash
+org-formation init-pipeline --profile master-account --region us-east-1 --build-account-id 208334959160 --verbose --print-stack
+INFO: uploading initial commit to S3 organization-formation-208334959160/initial-commit.zip...
+INFO: creating codecommit / codebuild and codepipeline resources using CloudFormation...
+
+DEBG: putting object to S3:
+{
+  "Bucket": "organization-formation-208334959160",
+  "Key": "state.json"
+}
+INFO:
+INFO: Your pipeline and initial commit have been created in AWS.
+INFO: Hope this will get you started!
+INFO:
+INFO: Take your time and browse through the source, there is some additional guidance as comments.
+INFO:
+INFO: Have fun!
+INFO:
+INFO: --OC
+```
+
+Ok, it completed. So what did just happen?
+
+1. ofn created Cloudformation stack that deployed resources for the pipeline
+
+![Cloudformation](media/ofn-pipeline-init-cf.png)
+
+2. It created simple CodePipeline
+
+![CodePipeline](media/ofn-pipeline-init-codepipeline.png)
+
+3. There is a Codecommit repository, which triggers pipeline
+
+![Codecommit](media/ofn-pipeline-init-codecommit.png)
+
+4. Codebuild runs org-formation cli
+
+![Codebuild](media/ofn-pipeline-init-codebuild.png)
+
+ofn pushed some code to Codecommit, lets review it
+
+### Setup Codecommit repo
+
+With the code in Codecommit repository, there is a little bit of complexity of working with changes. AWS provides a helper for Codecommit to make git cli work transparently with it. The helper is a Python package, unfortunately it bring the whole Python ecosystem as a dependency (please let me know if there is a better way to do it).
+
+`pip install -r requirements.txt`
 
 # How to run and deploy
 
