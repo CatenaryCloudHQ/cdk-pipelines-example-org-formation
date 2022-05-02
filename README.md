@@ -6,6 +6,7 @@
   - [Org-formation CICD pipeline](#org-formation-cicd-pipeline)
     - [Bootstrap (init) pipeline](#bootstrap-init-pipeline)
     - [Setup Codecommit repo](#setup-codecommit-repo)
+  - [Add SCP](#add-scp)
 - [How to run and deploy](#how-to-run-and-deploy)
 - [CICD](#cicd)
 
@@ -142,6 +143,72 @@ Then set a remote tracking main branch from Codecommit: `git remote add origin-c
 Next, pull changes that init-pipeline made with `git pull origin-cc main --allow-unrelated-histories` which may causes merge conflicts.
 
 At this point, a commit and `git push orgin-cc` will trigger the pipeline to deploy changes.
+
+The main branch at origin-cc should have a structure similar to this:
+
+```
+tree .
+.
+├── 000-organization-build
+│   ├── org-formation-build.yml
+│   └── organization-tasks.yml
+├── README.md
+├── buildspec.yml
+├── organization-parameters.yml
+├── organization-tasks.yml
+└── organization.yml
+
+1 directory, 7 files
+```
+
+## Add SCP
+
+This will add a simple SCP to the root of the org, the SCP will restrict access to specific regions.
+
+Switch to branch `scp` and rebase `main` (`git rebase main`), it will bring all the changes from `main` branch, the one that should be in sync with Codecommit. We will use it in a moment to apply changes with SCP.
+
+Add SCP policy in the end of `organization.yml`
+
+```
+  RestrictUnusedRegionsSCP:
+    Type: OC::ORG::ServiceControlPolicy
+    Properties:
+      PolicyName: RestrictUnusedRegions
+      Description: Restrict Unused regions
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyUnsupportedRegions
+            Effect: Deny
+            NotAction:
+              - 'cloudfront:*'
+              - 'iam:*'
+              - 'route53:*'
+              - 'support:*'
+            Resource: '*'
+            Condition:
+              StringNotEquals:
+                'aws:RequestedRegion':
+                  - us-east-1
+                  - us-east-2
+```
+
+Add reference to the policy in the OrganizationRoot key:
+
+```
+  OrganizationRoot:
+    Type: OC::ORG::OrganizationRoot
+    Properties:
+      DefaultOrganizationAccessRoleName: OrganizationAccountAccessRole
+      ServiceControlPolicies:
+        - !Ref RestrictUnusedRegionsSCP
+```
+
+Commit changes, compare with main: `git diff main organization.yml` 
+
+Now switch back to main branch (`git checkout main`), merge scp branch (`git merge scp`) and push changes to the Codecommit (`git push --set-upstream origin-cc main`)
+
+In a few minutes changes will be deployed.
 
 # How to run and deploy
 
