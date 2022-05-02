@@ -47,7 +47,7 @@ Organization:
       RootEmail: roman+appx-dev@naumenko.ca
       AccountName: Application X development account
       Tags:
-        budget-alarm-threshold: '5'
+        budget-alarm-threshold: '10'
         account-owner-email: a+appx-dev@naumenko.ca
 
   Appx-prod:
