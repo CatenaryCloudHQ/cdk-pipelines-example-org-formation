@@ -137,6 +137,12 @@ With the code in Codecommit repository, there is a little bit of complexity of w
 
 `pip install -r requirements.txt`
 
+Then set a remote tracking main branch from Codecommit: `git remote add origin-cc codecommit::us-east-1://master-account@organization-formation`
+
+Next, pull changes that init-pipeline made with `git pull origin-cc main --allow-unrelated-histories` which may causes merge conflicts.
+
+At this point, a commit and `git push orgin-cc` will trigger the pipeline to deploy changes.
+
 # How to run and deploy
 
 Execute tasks:
