@@ -15,6 +15,8 @@ Organization:
     Type: OC::ORG::OrganizationRoot
     Properties:
       DefaultOrganizationAccessRoleName: OrganizationAccountAccessRole
+      ServiceControlPolicies:
+        - !Ref RestrictUnusedRegionsSCP
 
   SharedOU:
     Type: OC::ORG::OrganizationalUnit
@@ -48,7 +50,8 @@ Organization:
       RootEmail: roman+appx-dev@naumenko.ca
       AccountName: Application X development account
       Tags:
-        budget-alarm-threshold: '10'
+        subdomain: appx-dev
+        budget-alarm-threshold: '5'
         account-owner-email: a+appx-dev@naumenko.ca
 
   Appx-prod:
@@ -60,3 +63,25 @@ Organization:
       Tags:
         budget-alarm-threshold: '5'
         account-owner-email: a+appx-prod@naumenko.ca
+
+  RestrictUnusedRegionsSCP:
+    Type: OC::ORG::ServiceControlPolicy
+    Properties:
+      PolicyName: RestrictUnusedRegions
+      Description: Restrict Unused regions
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyUnsupportedRegions
+            Effect: Deny
+            NotAction:
+              - 'cloudfront:*'
+              - 'iam:*'
+              - 'route53:*'
+              - 'support:*'
+            Resource: '*'
+            Condition:
+              StringNotEquals:
+                'aws:RequestedRegion':
+                  - us-east-1
+                  - us-east-2
