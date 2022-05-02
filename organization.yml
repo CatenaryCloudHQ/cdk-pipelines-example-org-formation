@@ -29,6 +29,7 @@ Organization:
       OrganizationalUnitName: applicationx-accounts
       Accounts:
         - !Ref Appx-dev
+        - !Ref Appx-prod
 
   CICDAccount:
     Type: OC::ORG::Account
