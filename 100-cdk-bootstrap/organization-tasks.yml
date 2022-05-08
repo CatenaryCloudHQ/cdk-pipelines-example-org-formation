@@ -22,7 +22,7 @@ CdkBootstapCICD:
 # CDK bootstrap deployed to app accounts with trust to CICD account
 CdkBootstapBuildTarget:
   Type: update-stacks
-  Template: ./templates/cdk-bootstrap-template.yaml
+  Template: cdk-bootstrap-template.yaml
   StackName: CDKToolkit-CICDTarget
   Parameters:
   # Default (empty) create KMS key and it will cost money
