@@ -2,7 +2,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - npm install aws-organization-formation@"<1.1.0" -g
+      - npm install aws-organization-formation@0.9.20-beta.3 -g
       - echo installed aws-organization-formation
       - org-formation -v
   build:
