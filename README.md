@@ -217,7 +217,7 @@ In a few minutes changes will be deployed!
 
 Through the above steps, `ofn` helped setup up AWS Organization with multiple OUs and account, bootstrap CICD pipeline to apply changes via commits to a repository, and allowed to configure a basic SCP policy.
 
-It is time to setup something useful for the application development. Route53 domain delegation is one of such tasks: it is simple enough to configure in Cloudformation, and there is enough complexity for cross-account resource exchanges (NS records) to test drive `ofn` in a real-world scenario.
+It is time to setup something useful for the application development. Route53 domain delegation is one of such tasks: it is simple enough and fits in a small Cloudformation template, yet there is enough complexity for cross-account resource exchanges (NS records) to test drive `ofn` in a real-world scenario.
 
 Branch `tasks-cdk-bootstrap` contains configurations for CDK Bootstrap and the [subdomains](https://github.com/org-formation/org-formation-cli/tree/master/examples#subdomains) setup using tasks.
 
