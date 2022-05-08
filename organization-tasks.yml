@@ -30,7 +30,7 @@ CDKBoostrap:
   DependsOn: OrganizationBuild
   Path: ./100-cdk-bootstrap/organization-tasks.yml
 
-SubdomainsDelegation:
-  Type: include
-  DependsOn: OrganizationBuild
-  Path: ./110-subdomains/organization-tasks.yml
+# SubdomainsDelegation:
+#   Type: include
+#   DependsOn: OrganizationBuild
+#   Path: ./110-subdomains/organization-tasks.yml

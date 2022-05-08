@@ -7,7 +7,7 @@ phases:
       - org-formation -v
   build:
     commands:
-      - org-formation perform-tasks ./organization-tasks.yml --no-color --state-bucket-name organization-formation-208334959160 --state-object state.json 
+      - org-formation perform-tasks ./organization-tasks.yml --no-color --perform-cleanup --state-bucket-name organization-formation-208334959160 --state-object state.json 
   post_build:
     commands:
       - echo Build completed
