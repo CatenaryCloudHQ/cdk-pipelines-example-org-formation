@@ -6,13 +6,14 @@
   - [Org-formation CICD pipeline](#org-formation-cicd-pipeline)
     - [Bootstrap (init) pipeline](#bootstrap-init-pipeline)
     - [Setup Codecommit repo](#setup-codecommit-repo)
-  - [Add SCP](#add-scp)
+  - [Add SCP Policies](#add-scp-policies)
+  - [Managing AWS Organization with tasks](#managing-aws-organization-with-tasks)
 - [How to run and deploy](#how-to-run-and-deploy)
 - [CICD](#cicd)
 
 # About
 
-This project describes step-by-step configuration of AWS Organization with org-formation tool.
+This project describes step-by-step configuration of AWS Organization with AWS Organization Formation IaC tool.
 
 # Install
 
@@ -29,7 +30,7 @@ This is the tool commonly known under `ofn` abbreviation.
 
 # Develop
 
-The repository designed in form of bare-bone main branch with feature branches that add functionality.
+The repository designed in form of bare-bone main branch with feature branches that incrementally add functionality.
 
 The Readme describes how to build up this functionality by checking out branches and running `org-formation`
 
@@ -64,7 +65,7 @@ Checkout `main` branch where `organization.yml` config will be updated.
 
 The first step for `org-formation` is to initialize config file, run this command: `org-formation init organization.yml --profile master-account --region us-east-1 --verbose`
 
-ofn will pick up existing accounts and OUs in the AWS Organization and save them into organization.yml file for review and further changes. It does not make any changes in AWS at this stage.
+`ofn` will pick up existing accounts and OUs in the AWS Organization and save them into organization.yml file for review and further changes. It does not make any changes in AWS at this stage.
 
 Next step, update `organizations.yml` to configure AWS Organizations according to the diagram above with own email.
 
@@ -126,25 +127,25 @@ Ok, it completed. So what did just happen?
 
 ![Codecommit](media/ofn-pipeline-init-codecommit.png)
 
-4. Codebuild runs org-formation cli
+4. Codebuild that runs org-formation cli
 
 ![Codebuild](media/ofn-pipeline-init-codebuild.png)
 
-ofn pushed some code to Codecommit, lets review it
+The `ofn` pushed some code to Codecommit, lets review it.
 
 ### Setup Codecommit repo
 
-With the code in Codecommit repository, there is a little bit of complexity of working with changes. AWS provides a helper for Codecommit to make git cli work transparently with it. The helper is a Python package, unfortunately it bring the whole Python ecosystem as a dependency (please let me know if there is a better way to do it).
+`ofn` puts the code in Codecommit repository, so there some complexity of working with it. AWS provides a helper `git-remote-codecommit` for Codecommit to make git cli work transparently. The helper is a Python package, unfortunately it brings the whole Python ecosystem as a dependency (please let me know if there is a better way to do it).
 
 `pip install -r requirements.txt`
 
-Then set a remote tracking main branch from Codecommit: `git remote add origin-cc codecommit::us-east-1://master-account@organization-formation`
+Then set a remote tracking main branch from Codecommit: `git remote add origin-cc codecommit::us-east-1://master-account@organization-formation` (`orgin-cc` can be any string, but make it memorable so origins for github and codecommit repositories are easy to distinguish).
 
-Next, pull changes that init-pipeline made with `git pull origin-cc main --allow-unrelated-histories` which may causes merge conflicts.
+Next, pull changes that init-pipeline made with `git pull origin-cc main --allow-unrelated-histories` which may cause some merge conflicts.
 
 At this point, a commit and `git push orgin-cc` will trigger the pipeline to deploy changes.
 
-The main branch at origin-cc should have a structure similar to this:
+The main branch at the Codecommit `origin-cc` should have a structure similar to this:
 
 ```
 tree .
@@ -161,11 +162,13 @@ tree .
 1 directory, 7 files
 ```
 
-## Add SCP
+It includes templates both for the pipeline and AWS organization - very convenient!
 
-This will add a simple SCP to the root of the org, the SCP will restrict access to specific regions.
+## Add SCP Policies
 
-Switch to branch `scp` and rebase `main` (`git rebase main`), it will bring all the changes from `main` branch, the one that should be in sync with Codecommit. We will use it in a moment to apply changes with SCP.
+Now lets add a simple SCP to the root of the org. The SCP will restrict access to specific regions.
+
+Switch to branch `scp` and rebase `main` (`git rebase main`), it will bring all the changes from `main` branch, the one that should be in sync with Codecommit. We will use it in a moment to apply changes with SCP policies.
 
 Add SCP policy in the end of `organization.yml`
 
@@ -194,7 +197,6 @@ Add SCP policy in the end of `organization.yml`
 ```
 
 Add reference to the policy in the OrganizationRoot key:
-
 ```
   OrganizationRoot:
     Type: OC::ORG::OrganizationRoot
@@ -204,11 +206,22 @@ Add reference to the policy in the OrganizationRoot key:
         - !Ref RestrictUnusedRegionsSCP
 ```
 
-Commit changes, compare with main: `git diff main organization.yml` 
+Commit changes, compare with main: `git diff main organization.yml`
 
-Now switch back to main branch (`git checkout main`), merge scp branch (`git merge scp`) and push changes to the Codecommit (`git push --set-upstream origin-cc main`)
+Now switch back to the main branch (`git checkout main`), and merge `scp` branch (`git merge scp`).
+Last step is to push changes to the Codecommit (`git push --set-upstream origin-cc main`).
 
-In a few minutes changes will be deployed.
+In a few minutes changes will be deployed!
+
+## Managing AWS Organization with tasks
+
+Through the above steps, `ofn` helped setup up AWS Organization with multiple OUs and account, bootstrap CICD pipeline to apply changes via commits to a repository, and allowed to configure a basic SCP policy.
+
+It is time to setup something useful for the application development. Route53 domain delegation is one of such tasks: it is simple enough to configure in Cloudformation, and there is enough complexity for cross-account resource exchanges (NS records) to test drive `ofn` in a real-world scenario.
+
+Branch `tasks-cdk-bootstrap` contains configurations for CDK Bootstrap and the [subdomains](https://github.com/org-formation/org-formation-cli/tree/master/examples#subdomains) setup using tasks.
+
+[TODO] task file
 
 # How to run and deploy
 
