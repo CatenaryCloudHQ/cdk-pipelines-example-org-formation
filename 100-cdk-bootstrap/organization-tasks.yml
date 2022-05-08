@@ -3,7 +3,7 @@
 # CDK bootstrap deployed to CICD account
 CdkBootstapCICD:
   Type: update-stacks
-  Template: ./templates/cdk-bootstrap-template.yaml
+  Template: cdk-bootstrap-template.yaml
   StackName: CDKToolkit-CICD
   Parameters:
   # Default (empty) create KMS key and it will cost money

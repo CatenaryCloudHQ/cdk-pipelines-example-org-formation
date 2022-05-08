@@ -1,7 +1,7 @@
 
 Subdomains:
   Type: update-stacks
-  Template: ./templates/subdomains.yml
+  Template: subdomains.yml
   StackName: OrgFormation-Subdomains
   Parameters:
     rootHostedZoneName: catenarycloud.com
