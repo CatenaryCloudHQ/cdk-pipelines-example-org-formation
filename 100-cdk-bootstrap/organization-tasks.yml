@@ -16,7 +16,7 @@ CdkBootstapCICD:
       - us-east-1
       - us-east-2
   MaxConcurrentStacks: 10
-  FailedStackTolerance: 10
+  FailedStackTolerance: 1
   LogVerbose: true
 
 # CDK bootstrap deployed to app accounts with trust to CICD account
@@ -37,5 +37,5 @@ CdkBootstapBuildTarget:
       - us-east-1
       - us-east-2
   MaxConcurrentStacks: 10
-  FailedStackTolerance: 10
+  FailedStackTolerance: 1
   LogVerbose: true

@@ -6,5 +6,5 @@ Subdomains:
   Parameters:
     rootHostedZoneName: catenarycloud.com
   MaxConcurrentStacks: 10
-  FailedStackTolerance: 10
+  FailedStackTolerance: 1
   LogVerbose: true
