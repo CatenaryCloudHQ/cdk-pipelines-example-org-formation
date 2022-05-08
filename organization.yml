@@ -61,6 +61,7 @@ Organization:
       RootEmail: roman+appx-prod@naumenko.ca
       AccountName: Application X production account
       Tags:
+        subdomain: appx-prod
         budget-alarm-threshold: '5'
         account-owner-email: a+appx-prod@naumenko.ca
 
