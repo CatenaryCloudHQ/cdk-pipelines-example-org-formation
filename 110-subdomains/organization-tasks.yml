@@ -1,0 +1,10 @@
+
+Subdomains:
+  Type: update-stacks
+  Template: ./templates/subdomains.yml
+  StackName: OrgFormation-Subdomains
+  Parameters:
+    rootHostedZoneName: catenarycloud.com
+  MaxConcurrentStacks: 10
+  FailedStackTolerance: 10
+  LogVerbose: true

@@ -25,7 +25,12 @@ OrganizationBuild:
   Path: ./000-organization-build/organization-tasks.yml
 
 # # this feature will depend on the OrganizationBuild task.
-# MyFeature:
-#   Type: include
-#   DependsOn: OrganizationBuild
-#   Path: ./100-my-feature/organization-tasks.yml
+CDKBoostrap:
+  Type: include
+  DependsOn: OrganizationBuild
+  Path: ./100-cdk-bootstrap/organization-tasks.yml
+
+SubdomainsDelegation:
+  Type: include
+  DependsOn: OrganizationBuild
+  Path: ./110-subdomains/organization-tasks.yml
