@@ -8,8 +8,7 @@
     - [Setup Codecommit repo](#setup-codecommit-repo)
   - [Add SCP Policies](#add-scp-policies)
   - [Managing AWS Organization with tasks](#managing-aws-organization-with-tasks)
-- [How to run and deploy](#how-to-run-and-deploy)
-- [CICD](#cicd)
+- [Documentation and examples](#documentation-and-examples)
 
 # About
 
@@ -30,7 +29,7 @@ This is the tool commonly known under `ofn` abbreviation.
 
 # Develop
 
-The repository designed in form of bare-bone main branch with feature branches that incrementally add functionality.
+The repository designed in form of bare-bone main branch with two feature branches that add incremental functionality.
 
 The Readme describes how to build up this functionality by checking out branches and running `org-formation`
 
@@ -54,9 +53,9 @@ flowchart TB
 
     ma --> sharedou
 
-    cicd -->|trust| dev
+    cicd --> dev
 
-    cicd -->|trust| prod
+    cicd --> prod
 ```
 
 ## Init state
@@ -221,30 +220,42 @@ It is time to setup something useful for the application development. Route53 do
 
 Branch `tasks-cdk-bootstrap` contains configurations for CDK Bootstrap and the [subdomains](https://github.com/org-formation/org-formation-cli/tree/master/examples#subdomains) setup using tasks.
 
-[TODO] task file
+The project has tasks folders enumerated to maintain logic order how tasks run. This is what each does:
 
-# How to run and deploy
+- `000-organization-build` - the pipeline for Org Formation, upon changes it will update itself, just as any other task.
+- `100-cdk-bootstrap` - to run Cloudformation for CDK bootstrap, an equivalent of `cdk bootstrap <options>` command, however with `TrustedAccountsForLookup` parameters CDK bootstrap can be configured for any number of accounts, including new ones added later.
+- `110-subdomains` - to create subdomains for tagged accounts in organization.yaml (`Properties.Tags.subdomain: appx-dev`)
 
-Execute tasks:
+```
+tree .
+.
+├── 000-organization-build
+│   ├── org-formation-build.yml
+│   └── organization-tasks.yml
+├── 100-cdk-bootstrap
+│   ├── cdk-bootstrap-template.yaml
+│   └── organization-tasks.yml
+├── 110-subdomains
+│   ├── organization-tasks.yml
+│   └── subdomains.yml
+├── README.md
+├── buildspec.yml
+├── organization-parameters.yml
+├── organization-tasks.yml
+├── organization.yml
+└── requirements.txt
 
-`org-formation perform-tasks --perform-cleanup ./organization-tasks.yml --state-object state.json --profile master-account`
+4 directories, 16 files
+```
 
-Print CF stack for review:
+If something is not working as expected, please check few things:
 
-`org-formation print-stacks ./templates/subdomains.yml --profile master-account`
+- `npm install` in `buildspec.yml` has the same version as on local machine
+- Add `--perform-cleanup` to `perform-tasks` in the `buildspec.yml` to allow org-formation clean up stack
 
-# CICD
+# Documentation and examples
 
-The project had org-formation bootstrap CICD pipeline:
+AWS Organization Formation is a really powerful tool, these links can help with concepts and examples.
 
-`org-formation init-pipeline organization.yml --profile master-account --verbose --print-stack`
-
-`org-formation` is using AWS Codecommit to trigger changes.
-
-Add git helper with `pip install git-remote-codecommit`, then clone repository from Codecommit
-
-`git clone codecommit://organization-formation cdk-pipelines-example-org-formation`
-
-Respectively, pushes to main branch will trigger pipeline, `git push origin main`
-
-The pipeline is very simple is essentially runs `org-formation` cli to execute tasks tasks.
+1. [Automation examples](https://github.com/org-formation/org-formation-cli/tree/master/examples) We used subdomains example in this repo.
+2. [Reference implementation](https://github.com/org-formation/org-formation-reference). This repository is a simplified version of this detailed and advanced reference implementation.
