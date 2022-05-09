@@ -1,0 +1,41 @@
+
+# Stacks for CDK bootstrap
+# CDK bootstrap deployed to CICD account
+CdkBootstapCICD:
+  Type: update-stacks
+  Template: cdk-bootstrap-template.yaml
+  StackName: CDKToolkit-CICD
+  Parameters:
+  # Default (empty) create KMS key and it will cost money
+    FileAssetsBucketKmsKeyId: 'AWS_MANAGED_KEY'
+    CloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess']
+  DefaultOrganizationBinding:
+    IncludeMasterAccount: false
+    Account: !Ref CICDAccount
+    Region:
+      - us-east-1
+      - us-east-2
+  MaxConcurrentStacks: 10
+  FailedStackTolerance: 0
+  LogVerbose: true
+
+# CDK bootstrap deployed to app accounts with trust to CICD account
+CdkBootstapBuildTarget:
+  Type: update-stacks
+  Template: cdk-bootstrap-template.yaml
+  StackName: CDKToolkit-CICDTarget
+  Parameters:
+  # Default (empty) create KMS key and it will cost money
+    FileAssetsBucketKmsKeyId: 'AWS_MANAGED_KEY'
+    CloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess']
+    TrustedAccounts: [ !Ref CICDAccount ]
+    TrustedAccountsForLookup: [ !Ref CICDAccount ]
+  DefaultOrganizationBinding:
+    IncludeMasterAccount: false
+    OrganizationalUnit: !Ref ApplicationX
+    Region:
+      - us-east-1
+      - us-east-2
+  MaxConcurrentStacks: 10
+  FailedStackTolerance: 0
+  LogVerbose: true
