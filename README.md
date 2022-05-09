@@ -169,7 +169,7 @@ Now lets add a simple SCP to the root of the org. The SCP will restrict access t
 
 Switch to branch `scp` and rebase `main` (`git rebase main`), it will bring all the changes from `main` branch, the one that should be in sync with Codecommit. We will use it in a moment to apply changes with SCP policies.
 
-Add SCP policy in the end of `organization.yml`
+Add SCP policy in the end of `organization.yml` (the policy is already there, uncomment it)
 
 ```
   RestrictUnusedRegionsSCP:
@@ -195,7 +195,7 @@ Add SCP policy in the end of `organization.yml`
                   - us-east-2
 ```
 
-Add reference to the policy in the OrganizationRoot key:
+Add reference to the policy in the OrganizationRoot key (uncommented respective reference):
 ```
   OrganizationRoot:
     Type: OC::ORG::OrganizationRoot
