@@ -1,0 +1,13 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - npm install aws-organization-formation@"<1.1.0" -g
+      - echo installed aws-organization-formation
+      - org-formation -v
+  build:
+    commands:
+      - org-formation perform-tasks ./organization-tasks.yml --no-color --state-bucket-name organization-formation-208334959160 --state-object state.json 
+  post_build:
+    commands:
+      - echo Build completed
