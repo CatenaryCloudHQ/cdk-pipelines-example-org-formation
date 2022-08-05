@@ -15,8 +15,8 @@ Organization:
     Type: OC::ORG::OrganizationRoot
     Properties:
       DefaultOrganizationAccessRoleName: OrganizationAccountAccessRole
-      ServiceControlPolicies:
-        - !Ref RestrictUnusedRegionsSCP
+      # ServiceControlPolicies:
+        # - !Ref RestrictUnusedRegionsSCP
 
   SharedOU:
     Type: OC::ORG::OrganizationalUnit
