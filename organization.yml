@@ -76,10 +76,20 @@ Organization:
           - Sid: DenyUnsupportedRegions
             Effect: Deny
             NotAction:
-              - 'cloudfront:*'
-              - 'iam:*'
-              - 'route53:*'
-              - 'support:*'
+              - "acm:*"
+              - "budgets:*"
+              - "chatbot:*"
+              - "cloudfront:*"
+              - "iam:*"
+              - "sts:*"
+              - "kms:*"
+              - "route53:*"
+              - "route53domains:*"
+              - "route53resolver:*"
+              - "organizations:*"
+              - "support:*"
+              - "waf:*"
+              - "wafv2:*"
             Resource: '*'
             Condition:
               StringNotEquals:
